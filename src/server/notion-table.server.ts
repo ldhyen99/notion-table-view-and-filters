@@ -1,34 +1,9 @@
-
+import { ApiDataTableItem, NotionDataItem, NotionStatus } from '@/types/notion-table.type';
 import axios from 'axios';
 
-export interface NotionLink {
-  label: string;
-  url: string;
-}
-
-export type NotionStatus = 'Closed' | 'Lead' | 'Proposal' | 'Lost';
-export type NotionPriority = 'High' | 'Medium' | 'Low';
-
-export interface NotionDataItem {
-  id: string;
-  Name: string | NotionLink;
-  Company: string | NotionLink;
-  Status: NotionStatus;
-  Priority: NotionPriority;
-  EstimatedValue: number;
-  AccountOwner: string | NotionLink;
-  [key: string]: string | number | NotionLink | NotionStatus | NotionPriority;
-}
-
-interface ApiDataItem {
-  name: string;
-  company: string;
-  status: string; 
-  priority: NotionPriority;
-  estimatedValue: number;
-  accountOwner: string;
-  [key: string]: any;
-}
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const ORIGINAL_DATA_SOURCE_URL = API_BASE_URL +  '/data';
+const SORT_API_BASE_URL = API_BASE_URL + '/sort'; 
 
 function mapApiStatusToNotionStatus(apiStatus: string): NotionStatus {
   const lowerCaseStatus = apiStatus?.toLowerCase();
@@ -50,10 +25,6 @@ function mapApiStatusToNotionStatus(apiStatus: string): NotionStatus {
   }
 }
 
-const ORIGINAL_DATA_SOURCE_URL = 'https://notion-server-nine.vercel.app/api/data';
-const SORT_API_BASE_URL = 'https://notion-server-nine.vercel.app/api/sort'; 
-
-
 export async function fetchNotionData(
   sortProperty?: keyof NotionDataItem,
   sortDirection?: 'ascending' | 'descending'
@@ -72,7 +43,7 @@ export async function fetchNotionData(
   }
 
   try {
-    const response = await axios.get<ApiDataItem[]>(url);
+    const response = await axios.get<ApiDataTableItem[]>(url);
     if (response.data && Array.isArray(response.data)) {
       return response.data.map((item, index) => ({
         id: item.id || (index + 1).toString(),
