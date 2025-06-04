@@ -1,4 +1,4 @@
-import { NotionTable } from '@/features/notion-table';
+import { NotionTable } from '@/components/notion-table/notion-table';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NotionDataItem } from '@/types/notion-table.type';
 import { fetchNotionData } from '@/server/notion-table.server';

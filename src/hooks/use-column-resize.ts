@@ -1,5 +1,5 @@
-import { ColumnState, MIN_COLUMN_WIDTH, ResizingColumn } from "@/types/notion-table.type";
 import { useCallback, useEffect, useState } from "react";
+import { ColumnState, MIN_COLUMN_WIDTH, ResizingColumn } from "@/types/notion-table.type";
 
 export const useColumnResize = (columns: ColumnState[], setColumns: (columns: ColumnState[]) => void) => {
     const [resizingColumn, setResizingColumn] = useState<ResizingColumn | null>(null);
