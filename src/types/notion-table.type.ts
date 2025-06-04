@@ -1,4 +1,4 @@
-export type NotionStatus = 'Closed' | 'Lead' | 'Proposal' | 'Lost';
+export type NotionStatus = 'Closed' | 'Lead' | 'Proposal' | 'Lost' | 'Qualified' | 'Negotiation';
 export type NotionPriority = 'High' | 'Medium' | 'Low';
 
 export interface NotionDataItem {

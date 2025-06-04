@@ -12,9 +12,11 @@ export const TableCellContent = ({ item, columnKey }: { item: NotionDataItem; co
     let badgeVariant: "default" | "secondary" | "destructive" | "outline" = "default";
     if (status === 'Closed') badgeVariant = 'default'; 
     else if (status === 'Lead') badgeVariant = 'secondary'; 
-    else if (status === 'Proposal') return <Badge variant="outline" className="border-yellow-500 text-yellow-700 dark:border-yellow-400 dark:text-yellow-400">{status}</Badge>;
     else if (status === 'Lost') badgeVariant = 'destructive'; 
-    
+    else if (status === 'Proposal') return <Badge variant="outline" className="border-yellow-500 text-yellow-700 dark:border-yellow-400 dark:text-yellow-400">{status}</Badge>;
+    else if (status === 'Qualified') return <Badge variant="outline" className="border-green-500 text-green-600 dark:border-green-400 dark:text-green-500">{status}</Badge>;
+    else if (status === 'Negotiation') return <Badge variant="outline" className="border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-500">{status}</Badge>;
+
     return <Badge variant={badgeVariant} className={status === 'Closed' ? 'bg-accent text-accent-foreground hover:bg-accent/80' : ''}>{status}</Badge>;
   }
 

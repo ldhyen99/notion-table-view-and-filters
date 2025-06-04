@@ -16,6 +16,10 @@ function mapApiStatusToNotionStatus(apiStatus: string): NotionStatus {
       return 'Lost';
     case 'proposal': 
       return 'Proposal';
+    case 'qualified':
+      return 'Qualified';
+    case 'negotiation':
+      return 'Negotiation';
     default:
       if (['Closed', 'Lead', 'Proposal', 'Lost'].includes(apiStatus as NotionStatus)) {
         return apiStatus as NotionStatus;
