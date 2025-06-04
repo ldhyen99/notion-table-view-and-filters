@@ -1,6 +1,7 @@
-import { NotionTable } from '@/components/notion-table';
-import { fetchNotionData, type NotionDataItem } from '@/lib/notion-data';
+import { NotionTable } from '@/features/notion-table';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { NotionDataItem } from '@/types/notion-table.type';
+import { fetchNotionData } from '@/server/notion-table.server';
 
 export default async function Home() {
   const notionData: NotionDataItem[] = await fetchNotionData();
