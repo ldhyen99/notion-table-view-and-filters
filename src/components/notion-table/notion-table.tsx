@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components
 import { Button } from '@/components/ui/button';
 import { TableHeaderCell } from './table-header-cell';
 import { TableCellContent } from './table-cell-content';
+import { NotionFilterApiPayload } from '@/types/notion-filter.type';
 
 const initialColumnsConfig: ColumnConfig[] = [
   { key: 'Name', title: 'Name', defaultWidth: 200, isSortable: true },
@@ -24,9 +25,10 @@ const initialColumnsConfig: ColumnConfig[] = [
 
 interface NotionTableProps {
   initialData: NotionDataItem[];
+  currentFilter?: NotionFilterApiPayload; 
 }
 
-export function NotionTable({ initialData }: NotionTableProps) {
+export function NotionTable({ initialData, currentFilter }: NotionTableProps) {
   const [data, setData] = useState<NotionDataItem[]>(initialData);
   const [columns, setColumns] = useState<ColumnState[]>(
     initialColumnsConfig.map((col) => ({
@@ -44,6 +46,7 @@ export function NotionTable({ initialData }: NotionTableProps) {
   const isMobile = useIsMobile();
   const tableRef = useRef<HTMLTableElement>(null);
   const isMounted = useRef(false);
+  const currentFilterRef = useRef<NotionFilterApiPayload | undefined>(currentFilter);
 
   const handleSort = (key: keyof NotionDataItem) => {
     if (isLoading) return;
@@ -86,10 +89,14 @@ export function NotionTable({ initialData }: NotionTableProps) {
   };
 
   useEffect(() => {
+    currentFilterRef.current = currentFilter;
+  }, [currentFilter]);
+  
+  useEffect(() => {
     if (!sortConfig) {
       setData(initialData);
     }
-  }, [initialData, sortConfig]);
+  }, [initialData]);
 
   useEffect(() => {
     if (!isMounted.current) {
@@ -99,10 +106,14 @@ export function NotionTable({ initialData }: NotionTableProps) {
       }
     }
 
+    if (!sortConfig && currentFilter) {
+      return;
+    }
+
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const apiData = await fetchNotionData(sortConfig?.key, sortConfig?.direction);
+        const apiData = await fetchNotionData(sortConfig?.key, sortConfig?.direction,  currentFilterRef.current);
         setData(apiData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -116,18 +127,6 @@ export function NotionTable({ initialData }: NotionTableProps) {
 
   return (
     <>
-      {sortConfig && (
-         <div className="mb-4 flex justify-end">
-         <Button 
-           onClick={() => setSortConfig(null)} 
-           variant="outline" 
-           size="sm"
-           disabled={isLoading}
-         >
-           Reset Sort
-         </Button>
-       </div>
-      )}
       <main className={cn("rounded-lg border shadow-md bg-card", { "overflow-x-auto": isMobile })}>
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-card/50 z-10">
