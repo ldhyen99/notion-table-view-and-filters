@@ -3,11 +3,11 @@
 
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { DEFAULT_LOGICAL_OPERATOR, MAX_FILTER_DEPTH, getConditionDefinition, getPropertyDefinition } from './filter.config';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FilterGroupComponent } from './filter-group';
 import { useToast } from '@/hooks/use-toast';
 import { RootFilterState, FilterGroup as FilterGroupType, SimpleFilterRule, FilterItem, NotionApiFilterRule, NotionApiCompoundFilter, NotionApiFilterObject, NotionFilterApiPayload } from '@/types/notion-filter.type';
+import { DEFAULT_LOGICAL_OPERATOR, MAX_FILTER_DEPTH, getConditionDefinition, getPropertyDefinition } from './filter.config';
+import { FilterGroupComponent } from './filter-group';
 
 interface NotionFilterBuilderProps {
   onApplyFilters: (filterPayload: NotionFilterApiPayload) => void;
@@ -142,11 +142,6 @@ export const NotionFilterBuilder: React.FC<NotionFilterBuilderProps> = ({
   
   const convertToApiPayload = (item: FilterItem, parentEffectiveNot: boolean = false): NotionApiFilterObject | null => {
     const currentItemIsNot = item.isNot ?? false;
-    // Effective NOT state for current item:
-    // if parent was NOT, and item itself is NOT -> item becomes IS (NOT (NOT A) = A) -> effectiveIsNot = false
-    // if parent was NOT, and item itself is IS -> item becomes NOT (NOT A) -> effectiveIsNot = true
-    // if parent was IS, and item itself is NOT -> item becomes NOT (NOT A) -> effectiveIsNot = true
-    // if parent was IS, and item itself is IS -> item becomes IS (A) -> effectiveIsNot = false
     const effectiveIsNot = parentEffectiveNot ? !currentItemIsNot : currentItemIsNot;
 
     if (item.type === 'rule') {
@@ -168,7 +163,6 @@ export const NotionFilterBuilder: React.FC<NotionFilterBuilderProps> = ({
           // 'is checked' (UI rule.value=true, condition='does_not_equal') + NOT -> 'is checked' (API equals: true) (this case is weird, UI should prevent)
           // 'is not checked' (UI rule.value=false, condition='does_not_equal') + NOT -> 'is not checked' (API equals:false) (this case is weird)
 
-          // Simplified: assuming UI uses 'equals' for "is checked" (value=true) / "is not checked" (value=false)
           if (item.condition === 'equals') {
              apiValue = !(item.value === true); // Invert the boolean state
           } else if (item.condition === 'does_not_equal') {

@@ -2,17 +2,19 @@
 "use client";
 
 import React, { useEffect } from 'react';
+import { format } from 'date-fns';
+import { Calendar as CalendarIcon, X as RemoveIcon, AlertTriangle } from 'lucide-react';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar as CalendarIcon, X as RemoveIcon, AlertTriangle } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
-import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { SimpleFilterRule } from '@/types/notion-filter.type';
+
 import { AVAILABLE_PROPERTIES, getConditionsForPropertyType, getPropertyDefinition, getConditionDefinition } from './filter.config';
 
 interface FilterRuleProps {
@@ -37,14 +39,12 @@ export const FilterRule: React.FC<FilterRuleProps> = ({
   const handlePropertyChange = (value: string) => {
     const newProperty = getPropertyDefinition(value);
     if (newProperty) {
-      // Reset condition and value when property changes
       onUpdate(rule.id, { 
         property: newProperty.value, 
         propertyLabel: newProperty.label, 
         propertyType: newProperty.type, 
         condition: undefined, 
         value: undefined, 
-        // isNot: rule.isNot // Keep isNot state or reset? For now, keep.
       });
     }
   };
@@ -53,11 +53,10 @@ export const FilterRule: React.FC<FilterRuleProps> = ({
     const newCondition = getConditionDefinition(value, selectedProperty?.type);
      if (newCondition) {
       let updatedValue = rule.value;
-      // Reset value if the new condition hides input or changes component type, or if it's a checkbox property
       if (newCondition.hideValueInput) {
          updatedValue = undefined; 
       } else if (rule.propertyType === 'checkbox' && (newCondition.value === 'equals' || newCondition.value === 'does_not_equal')) {
-         updatedValue = false; // Default to false for checkbox 'equals'/'does_not_equal'
+         updatedValue = false;
       } else if (newCondition.valueComponent !== (selectedCondition?.valueComponent)) {
          updatedValue = undefined;
       }
@@ -65,7 +64,6 @@ export const FilterRule: React.FC<FilterRuleProps> = ({
         condition: newCondition.value, 
         conditionLabel: newCondition.label, 
         value: updatedValue,
-        // isNot: rule.isNot // Keep isNot state
       });
     }
   };
@@ -76,11 +74,6 @@ export const FilterRule: React.FC<FilterRuleProps> = ({
   };
 
   const handleCheckboxPropertyValueChange = (checked: boolean) => {
-     // For property type 'checkbox', its direct value is boolean.
-     // This is for when the PROPERTY is a checkbox, not when the condition input is a checkbox.
-     // 'is checked' (equals) means value: true. 'is not checked' (does_not_equal) also means value: true internally, API maps later.
-     // Let's simplify: rule.value stores the intended state of the checkbox (true for checked, false for unchecked)
-     // when the condition is 'equals' or 'does_not_equal'.
      onUpdate(rule.id, { value: !!checked });
   };
 
@@ -92,35 +85,22 @@ export const FilterRule: React.FC<FilterRuleProps> = ({
     onUpdate(rule.id, { isNot: !rule.isNot });
   };
 
-  // Effective isNot considers parent group's isNot if we were to pass it down.
-  // For now, isNotUnsupported only looks at the rule's own isNot and its condition.
-  // The NotionFilterBuilder's getUnsupportedNotConditions handles combined effects.
   const isNotUnsupported = rule.isNot && selectedCondition?.unsupportedForNot;
 
   const renderValueInput = () => {
     if (!selectedProperty || !selectedCondition) return null;
 
-    // Handle conditions that hide value input (e.g., is_empty, is_not_empty)
     if (selectedCondition.hideValueInput && selectedProperty.type !== 'checkbox') {
-         // For 'is_empty'/'is_not_empty' on checkbox, Notion API implies value 'true', but no UI input needed.
-         // For other types, these conditions don't take a user value.
         return null;
     }
     
-    // Specific handling for property type 'checkbox'
     if (selectedProperty.type === 'checkbox') {
       if (selectedCondition.value === 'equals' || selectedCondition.value === 'does_not_equal') {
-        // The rule.value for a checkbox property when condition is equals/does_not_equal
-        // represents the state we're checking against (true for checked, false for unchecked).
-        // The actual API payload is { checkbox: { equals: <boolean> } }
-        // For 'is checked' (equals), UI value true -> API value true
-        // For 'is not checked' (does_not_equal), UI value true -> API value false
-        // The `convertToApiPayload` will handle the mapping based on rule.condition and rule.isNot
         return (
           <div className="flex items-center space-x-2 ml-2">
             <Checkbox
               id={`${rule.id}-checkbox-value`}
-              checked={rule.value === true} // UI shows checkbox checked if rule.value is true
+              checked={rule.value === true}
               onCheckedChange={handleCheckboxPropertyValueChange}
               className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
             />
@@ -130,7 +110,7 @@ export const FilterRule: React.FC<FilterRuleProps> = ({
           </div>
         );
       }
-      return null; // Other conditions for checkbox type (like is_empty) don't need a value input here
+      return null; 
     }
     
     const valueComponentType = selectedCondition.valueComponent || 

@@ -74,8 +74,7 @@ export const getPropertyDefinition = (value: string): PropertyDefinition | undef
 };
 
 export const getConditionDefinition = (value: string, propertyType?: PropertyType): ConditionDefinition | undefined => {
-  if (!propertyType) return CONDITIONS.find(c => c.value === value); // Less specific, might be ambiguous
-  // More specific: find condition that applies to the property type
+  if (!propertyType) return CONDITIONS.find(c => c.value === value);
   const conditions = getConditionsForPropertyType(propertyType);
   return conditions.find(c => c.value === value);
 };

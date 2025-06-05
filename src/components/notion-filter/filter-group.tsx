@@ -2,13 +2,15 @@
 "use client";
 
 import React from 'react';
+import { PlusCircle, Trash2, AlertTriangle } from 'lucide-react';
+
 import {  FilterGroup as FilterGroupType, SimpleFilterRule, LogicalOperator } from '@/types/notion-filter.type';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MAX_FILTER_DEPTH, DEFAULT_LOGICAL_OPERATOR } from './filter.config';
-import { PlusCircle, Trash2, AlertTriangle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
 import { FilterRule } from './filter-rule';
+import { MAX_FILTER_DEPTH, DEFAULT_LOGICAL_OPERATOR } from './filter.config';
 
 interface FilterGroupProps {
   group: FilterGroupType;
