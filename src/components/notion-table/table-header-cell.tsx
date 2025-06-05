@@ -5,6 +5,7 @@ import { ArrowDown, ArrowUp, GripVertical } from 'lucide-react';
 import { TableHead } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { ColumnState, NotionDataItem, RESIZE_HANDLE_WIDTH, ResizingColumn, SortConfig } from '@/types/notion-table.type';
+import { CustomTooltip } from '../ui/custom-tooltip';
 
 
 export const TableHeaderCell = ({
@@ -51,18 +52,20 @@ export const TableHeaderCell = ({
           tabIndex={0}
           className="h-4 w-4 mr-2 text-muted-foreground cursor-grab group-hover:text-foreground transition-colors" 
         />
-        <button
-          type="button"
-          disabled={isLoading || !column.isSortable}
-          className={cn(
-            "flex-grow truncate text-left",
-            column.isSortable ? "cursor-pointer hover:text-primary" : "",
-            isLoading && column.isSortable ? "cursor-not-allowed opacity-70" : ""
-          )}
-          onClick={() => column.isSortable && !isLoading && onSort(column.key)}
-        >
-          {column.title}
-        </button>
+        <CustomTooltip content={<p>Sort {column.title}</p>}>
+          <button
+            type="button"
+            disabled={isLoading || !column.isSortable}
+            className={cn(
+              "flex-grow truncate text-left",
+              column.isSortable ? "cursor-pointer hover:text-primary" : "",
+              isLoading && column.isSortable ? "cursor-not-allowed opacity-70" : ""
+            )}
+            onClick={() => column.isSortable && !isLoading && onSort(column.key)}
+          >
+            {column.title}
+          </button>
+        </CustomTooltip>
         {column.isSortable && sortConfig?.key === column.key && !isLoading && (
           sortConfig.direction === "ascending" ? (
             <ArrowUp className="h-4 w-4 ml-2 text-primary" />
