@@ -1,18 +1,20 @@
 
 "use client";
-
 import React, { useEffect } from 'react';
+import { format } from 'date-fns';
+import { Calendar as CalendarIcon, X as RemoveIcon, AlertTriangle } from 'lucide-react';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar as CalendarIcon, X as RemoveIcon, AlertTriangle } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
-import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { SimpleFilterRule } from '@/types/notion-filter.type';
+import { useIsMobile } from '@/hooks';
+
 import { AVAILABLE_PROPERTIES, getConditionsForPropertyType, getPropertyDefinition, getConditionDefinition } from './filter.config';
 
 interface FilterRuleProps {
@@ -33,7 +35,7 @@ export const FilterRule: React.FC<FilterRuleProps> = ({
   const selectedProperty = getPropertyDefinition(rule.property || '');
   const conditionsForProperty = selectedProperty ? getConditionsForPropertyType(selectedProperty.type) : [];
   const selectedCondition = getConditionDefinition(rule.condition || '', selectedProperty?.type);
-
+  const isMobile = useIsMobile();
   const handlePropertyChange = (value: string) => {
     const newProperty = getPropertyDefinition(value);
     if (newProperty) {
@@ -240,16 +242,29 @@ export const FilterRule: React.FC<FilterRuleProps> = ({
       {selectedProperty && selectedCondition && renderValueInput()}
       
       {isNotUnsupported && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <AlertTriangle className="h-4 w-4 text-destructive ml-1" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-xs">Applying NOT to &quot;{selectedCondition?.label}&quot; for &quot;{selectedProperty?.label}&quot; may be unsupported or lead to unexpected behavior.</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        (() => {
+          const commonMessage = `NOT with "${selectedCondition?.label || 'condition'}" on "${selectedProperty?.label || 'property'}" may be unsupported`;
+          const message = isMobile ? commonMessage : `${commonMessage} or lead to unexpected behavior.`;
+          const icon = <AlertTriangle className={cn("h-4 w-4 text-destructive", isMobile ? "mr-1 flex-shrink-0" : "ml-1")} />;
+
+          return isMobile ? (
+            <div className="flex items-center mt-1.5 ml-1">
+              {icon}
+              <p className="text-xs text-destructive">{message}</p>
+            </div>
+          ) : (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span>{icon}</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs max-w-xs">{message}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          );
+        })()
       )}
 
       <Button variant="ghost" size="icon" onClick={() => onRemove(rule.id)} className="ml-auto text-muted-foreground hover:text-destructive h-8 w-8">
