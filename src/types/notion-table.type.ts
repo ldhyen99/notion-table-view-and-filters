@@ -2,7 +2,7 @@ export type NotionStatus = 'Closed' | 'Lead' | 'Proposal' | 'Lost' | 'Qualified'
 export type NotionPriority = 'High' | 'Medium' | 'Low';
 
 export interface NotionDataItem {
-  id: string;
+  id: number;
   Name: string;
   Company: string;
   Status: NotionStatus;
@@ -15,7 +15,7 @@ export interface NotionDataItem {
 export interface ApiDataTableItem {
   name: string;
   company: string;
-  status: string; 
+  status: NotionStatus; 
   priority: NotionPriority;
   estimatedValue: number;
   accountOwner: string;

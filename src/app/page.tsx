@@ -1,6 +1,6 @@
 import { NotionDataItem } from '@/types/notion-table.type';
 import { fetchNotionData } from '@/server/notion-table.server';
-import { FilterableNotionTable } from '@/components/notion-filter/filter-dialog';
+import { FilterableNotionTable } from '@/components/notion-filter/filter-notion-table';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 export default async function Home() {

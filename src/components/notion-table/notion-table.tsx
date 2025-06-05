@@ -3,16 +3,16 @@
 import React, {  useEffect, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
-import { useColumnResize } from '@/hooks/use-column-resize';
-import { ColumnConfig, ColumnState, DEFAULT_COLUMN_WIDTH, MIN_COLUMN_WIDTH, NotionDataItem, SortConfig } from '@/types/notion-table.type';
 import { cn } from '@/lib/utils';
-import { fetchNotionData } from '@/server/notion-table.server';
+import { useColumnResize } from '@/hooks/use-column-resize';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
+import { fetchNotionData } from '@/server/notion-table.server';
+import { ColumnConfig, ColumnState, DEFAULT_COLUMN_WIDTH, MIN_COLUMN_WIDTH, NotionDataItem, SortConfig } from '@/types/notion-table.type';
+import { NotionFilterApiPayload } from '@/types/notion-filter.type';
+
 import { TableHeaderCell } from './table-header-cell';
 import { TableCellContent } from './table-cell-content';
-import { NotionFilterApiPayload } from '@/types/notion-filter.type';
 
 const initialColumnsConfig: ColumnConfig[] = [
   { key: 'Name', title: 'Name', defaultWidth: 200, isSortable: true },

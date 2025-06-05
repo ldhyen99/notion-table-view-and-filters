@@ -1,10 +1,11 @@
 
-"use client"; // Directive at the very top
+"use client";
 
 import React, { useState, useCallback } from 'react';
+import { Loader2, Filter, RotateCcw } from 'lucide-react';
+
 import { NotionFilterApiPayload } from '@/types/notion-filter.type';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Filter, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -15,9 +16,10 @@ import {
 } from "@/components/ui/dialog";
 import { NotionDataItem } from '@/types/notion-table.type';
 import { fetchNotionData } from '@/server/notion-table.server';
+import { useToast } from '@/hooks/use-toast';
+
 import { NotionFilterBuilder } from './filter-builder';
 import { NotionTable } from '../notion-table';
-import { useToast } from '@/hooks/use-toast';
 import { CustomTooltip } from '../ui/custom-tooltip';
 
 interface FilterableNotionTableProps {
@@ -33,7 +35,7 @@ export function FilterableNotionTable({ initialData: serverInitialData }: Filter
   const { toast } = useToast();
 
 
-  const handleApplyFilters = useCallback(async (filterPayload: NotionFilterApiPayload) => {    
+  const handleApplyFilters = useCallback(async (filterPayload: NotionFilterApiPayload) => {        
     setIsLoading(true);
     setCurrentFilter(filterPayload); 
     try {
@@ -56,7 +58,7 @@ export function FilterableNotionTable({ initialData: serverInitialData }: Filter
     setIsLoading(true);
     setCurrentFilter(undefined); // Clear any active filter
     try {
-      const defaultData = await fetchNotionData(); // Fetches from the base /api/data endpoint
+      const defaultData = await fetchNotionData(); // Fetches from the base /api/data endpoint      
       setTableData(defaultData);
       setResetToken(prev => prev + 1); // Increment token to force NotionTable remount and clear its internal sort
       toast({
@@ -108,7 +110,7 @@ export function FilterableNotionTable({ initialData: serverInitialData }: Filter
                 <DialogHeader>
                   <DialogTitle>Filter Database</DialogTitle>
                 </DialogHeader>
-                <div className="flex-grow overflow-hidden">
+                <div className="flex-grow overflow-auto">
                   <NotionFilterBuilder 
                     onApplyFilters={handleApplyFilters} 
                     onCloseDialog={handleCloseFilterDialog} 

@@ -1,42 +1,18 @@
 import { MAX_FILTER_DEPTH } from '@/components/notion-filter/filter.config';
 import { NotionFilterApiPayload } from '@/types/notion-filter.type';
-import { ApiDataTableItem, NotionDataItem, NotionStatus } from '@/types/notion-table.type';
-import axios from 'axios';
+import { ApiDataTableItem, NotionDataItem } from '@/types/notion-table.type';
+import { publicAPI } from './httpService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL + '/data';
-
-function mapApiStatusToNotionStatus(apiStatus: string): NotionStatus {
-  const lowerCaseStatus = apiStatus?.toLowerCase();
-  switch (lowerCaseStatus) {
-    case 'closed':
-      return 'Closed';
-    case 'lead':
-      return 'Lead';
-    case 'lost':
-      return 'Lost';
-    case 'proposal': 
-      return 'Proposal';
-    case 'qualified':
-      return 'Qualified';
-    case 'negotiation':
-      return 'Negotiation';
-    default:
-      if (['Closed', 'Lead', 'Proposal', 'Lost'].includes(apiStatus as NotionStatus)) {
-        return apiStatus as NotionStatus;
-      }
-      console.warn(`Unknown API status: ${apiStatus}, defaulting to Proposal`);
-      return 'Proposal';
-  }
-}
 
 // Helper function to map API data items to Notion data items
 function mapApiDataToNotionData(apiData: ApiDataTableItem[]): NotionDataItem[] {
   if (apiData && Array.isArray(apiData)) {
-    return apiData.map((item, index) => ({
-      id: item.id || (index + 1).toString(),
+    return apiData.map((item) => ({
+      id: item.id,
       Name: item.name,
       Company: item.company,
-      Status: mapApiStatusToNotionStatus(item.status),
+      Status: item.status,
       Priority: item.priority,
       EstimatedValue: item.estimatedValue,
       AccountOwner: item.accountOwner
@@ -75,14 +51,10 @@ export async function fetchNotionData(
   }
 
   try {
-    const response = await axios.post<ApiDataTableItem[]>(API_BASE_URL, apiPayloadBody);
-    return mapApiDataToNotionData(response.data);
+    const response = await publicAPI.post<ApiDataTableItem[]>(API_BASE_URL, apiPayloadBody);    
+    return mapApiDataToNotionData(response)
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(`Error during POST request to ${API_BASE_URL}:`, error.message, error.response?.data || error.toJSON());
-    } else {
-      console.error(`Error during POST request to ${API_BASE_URL}:`, error);
-    }
+    console.error('Error fetching data:', error);
     return [];
   }
 }
