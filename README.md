@@ -173,6 +173,7 @@ docker build -t <image-name> .
 
 # Read the .env.local file and set environment variables
 docker run -p 3000:3000 --env-file .env.local <image-name>
+```
 
 ## Contributing
 Feel free to submit issues or pull requests for improvements. Ensure all changes include updated unit tests.
