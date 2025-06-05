@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
-import { NotionTable } from "../../components/notion-table/notion-table";
 
+import { NotionTable } from "@/components/notion-table/notion-table";
 import { expectedNotionData as initialData } from '../mock-data';
-import { TableHeaderCell } from '../../components/notion-table/table-header-cell';
-import { TableCellContent } from '../../components/notion-table/table-cell-content';
+import { TableHeaderCell } from '@/components/notion-table/table-header-cell';
+import { TableCellContent } from '@/components/notion-table/table-cell-content';
 
 jest.mock('lucide-react', ()=> ({}));
 

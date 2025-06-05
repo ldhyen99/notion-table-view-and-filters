@@ -1,11 +1,12 @@
+import React from 'react';
 import '@testing-library/jest-dom'
 import { act, render, screen } from '@testing-library/react'
 
 import { FilterableNotionTable, NotionFilterBuilder, NotionTable } from '@/components';
 import { fetchNotionData } from '@/server';
-import { expectedNotionData as filterData } from '../mock-data';
-import React from 'react';
 import { Dialog, DialogHeader, DialogTitle, DialogTrigger, DialogContent } from '@/components/ui/dialog';
+
+import { expectedNotionData as filterData } from '../mock-data';
 
 jest.mock('lucide-react', ()=> ({
     Loader2: jest.fn(),
